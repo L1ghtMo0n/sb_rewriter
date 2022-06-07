@@ -1,4 +1,5 @@
 import okhttp3.*
+import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.io.File
@@ -52,8 +53,18 @@ fun toJson(response: String){
     val jsonParser = JSONParser()
     val root = jsonParser.parse(response) as JSONObject
     val predictionBest = root["prediction_best"] as JSONObject
-    val bertscore = predictionBest["bertscore"]
+    val bertscore = predictionBest["bertscore"] as String
+    val predictionAll = root["predictions_all"] as JSONArray
+
+    var predicted = ""
+    for (i in predictionAll.indices){
+        val j = i + 1
+        predicted = predicted + j + ". " + predictionAll[i] + "\n\n"
+    }
+
     val output = File("output.txt")
-    output.writeText(bertscore as String)
+    output.writeText(bertscore + "\n\n\n" + predicted)
     exitProcess(0)
 }
+
+
