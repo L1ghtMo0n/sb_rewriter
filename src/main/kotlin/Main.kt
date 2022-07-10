@@ -1,3 +1,4 @@
+package com.sodovaya.sb_rewriter
 import okhttp3.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
@@ -14,13 +15,13 @@ fun main() {
     connectAndGet()
 }
 
-fun connectAndGet(){
+fun connectAndGet() {
     val client = OkHttpClient()
 
     val file = File("config.txt")
     var cont = file.readText()
     val fileText = File("text.txt")
-    val contText = fileText.readText().trim()
+    val contText = fileText.readText().trim().replace("\n", " ").replace("\"", "\'")
     cont = cont.replace("txtxt", contText)
     val formBody = RequestBody.create(JSON, cont)
 
@@ -36,7 +37,9 @@ fun connectAndGet(){
 
         override fun onResponse(call: Call, response: Response) {
             response.use {
-                if (!response.isSuccessful) {println("response isn't successful"); return}
+                if (!response.isSuccessful) {
+                    println("response isn't successful"); return
+                }
 
                 val inpStream = response.body()?.string()
                 if (inpStream != null) {
@@ -49,7 +52,7 @@ fun connectAndGet(){
     })
 }
 
-fun toJson(response: String){
+fun toJson(response: String) {
     val jsonParser = JSONParser()
     val root = jsonParser.parse(response) as JSONObject
     val predictionBest = root["prediction_best"] as JSONObject
@@ -57,7 +60,7 @@ fun toJson(response: String){
     val predictionAll = root["predictions_all"] as JSONArray
 
     var predicted = ""
-    for (i in predictionAll.indices){
+    for (i in predictionAll.indices) {
         val j = i + 1
         predicted = predicted + j + ". " + predictionAll[i] + "\n\n"
     }
@@ -66,5 +69,3 @@ fun toJson(response: String){
     output.writeText(bertscore + "\n\n\n" + predicted)
     exitProcess(0)
 }
-
-
