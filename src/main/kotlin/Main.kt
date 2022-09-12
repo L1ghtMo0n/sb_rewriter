@@ -1,8 +1,11 @@
 package com.sodovaya.sb_rewriter
+import Instance
+import com.google.gson.Gson
 import okhttp3.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import requestJSON
 import java.io.File
 import java.io.IOException
 import kotlin.system.exitProcess
@@ -18,12 +21,11 @@ fun main() {
 fun connectAndGet() {
     val client = OkHttpClient()
 
-    val file = File("config.txt")
-    var cont = file.readText()
     val fileText = File("text.txt")
-    val contText = fileText.readText().trim().replace("\n", " ").replace("\"", "\'")
-    cont = cont.replace("txtxt", contText)
-    val formBody = RequestBody.create(JSON, cont)
+    val textToSend = fileText.readText().trim().replace("\n", " ").replace("\"", "\'")
+    val postJSON = requestJSON(listOf(Instance(text = textToSend, temperature = 0.9, top_k = 50, top_p = 0.7, range_mode = "bertscore")))
+
+    val formBody = RequestBody.create(JSON, Gson().toJson(postJSON))
 
     val request: Request = Request.Builder()
         .url(api)
