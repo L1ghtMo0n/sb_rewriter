@@ -1,3 +1,5 @@
+package modelsRequests
+
 data class Instance(
     val range_mode: String,
     val temperature: Double,
